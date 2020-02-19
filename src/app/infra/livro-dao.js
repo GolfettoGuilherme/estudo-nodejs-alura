@@ -27,6 +27,30 @@ class LivroDao{
         });
     }
 
+    editar(livro){
+        return new Promise((resolve, reject) => {
+            this._db.run(`
+                UPDATE livros SET 
+                    titulo = ?,
+                    preco = ?,
+                    descricao = ?
+                WHERE id = ?
+            `,[
+                livro.titulo,
+                livro.preco,
+                livro.descricao,
+                livro.id
+            ], err => {
+                if(err){
+                    console.log(err);
+                    return reject("não foi possivel editar");
+                }
+
+                resolve();
+            });
+        });
+    }
+
     lista(){
         //promise do ECMAScript 6
         return new Promise((resolve, reject) => {
@@ -37,6 +61,32 @@ class LivroDao{
                     return resolve(resultados);
                 }
             )
+        });
+    }
+
+    buscarPorId(id){
+        return new Promise((resolve, reject) => {
+            this._db.get("SELECT * FROM livros WHERE id = ?", [id],
+                (erro, livro) => {
+                    if(erro)
+                        return reject(erro);
+
+                    return resolve(livro);
+                }
+            );
+        });
+    }
+
+    remove(id){
+        return new Promise((resolve, reject) => {
+            this._db.get("DELETE FROM livros WHERE id = ?", [id],
+                (erro, livro) => {
+                    if(erro)
+                        return reject(erro);
+
+                    return resolve();
+                }
+            );
         });
     }
 }
